@@ -1,3 +1,3 @@
 import pandas as pd
 from matplotlib import pyplot as plt
-from pymongo import mongo_client
+from pymongo import MongoClient
