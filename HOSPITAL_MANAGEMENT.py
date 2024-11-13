@@ -69,13 +69,12 @@ class HospitalManagementApp(QMainWindow):
         self.createMenu()
         self.label = QLabel("🏥🚑🩺Welcome🩺🚑🏥")
         self.label.setAlignment(Qt.AlignCenter)
-        self.label.setStyleSheet("font-size: 100px; font-weight: bold; color: #FFD700;")  # Adjust font size and color
+        self.label.setStyleSheet("font-size: 100px; font-weight: bold; color: #FFD700;") 
         self.layout.addWidget(self.label)
 
     def createHeader(self):
         header_layout = QHBoxLayout()
         
-        # Hospital Name as a clickable button
         hospital_name_button = QPushButton("BU HOSPITAL MANAGEMENT")
         hospital_name_button.setStyleSheet("""
             QPushButton {
@@ -90,38 +89,26 @@ class HospitalManagementApp(QMainWindow):
                 text-decoration: underline; /* Optional: add underline on hover */
             }
         """)
-        hospital_name_button.clicked.connect(self.showHomePage)  # Connect to the home page method
+        hospital_name_button.clicked.connect(self.showHomePage) 
         header_layout.addWidget(hospital_name_button)
 
-        # Spacer to push the login button to the right
         header_layout.addSpacerItem(QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
 
         self.layout.addLayout(header_layout)
     
     def clearLayout(self):
-        # Clear all widgets from the layout
         for i in reversed(range(self.layout.count())): 
             widget = self.layout.itemAt(i).widget()
             if widget is not None:
                 widget.deleteLater()
 
     def showHomePage(self):
-        # Clear the layout
         self.clearLayout()
 
-        # Remove the code that adds the hospital image as a background
-        # background_label = QLabel(self)
-        # pixmap = QPixmap("hospital_with_doctors.jpg")  # Replace with your image file name
-        # background_label.setPixmap(pixmap)
-        # background_label.setScaledContents(True)  # Scale the image to fit the label
-        # background_label.setFixedSize(800, 600)  # Set a fixed size for the image label (match window size)
-
-        # Create a new QLabel for the welcome message
         welcome_label = QLabel("Welcome to BU HOSPITAL!")
         welcome_label.setStyleSheet("font-size: 24px; font-weight: bold; color: #FFD700;")  # Gold color
         self.layout.addWidget(welcome_label)
 
-        # Add hospital information with attractive styling
         hospital_info = [
             ("Our Mission: To provide compassionate and high-quality healthcare.", "font-size: 18px; color: #ADD8E6;"),
             ("Services Offered: Emergency care, outpatient services, surgery, and more.", "font-size: 18px; color: #90EE90;"),
@@ -132,25 +119,21 @@ class HospitalManagementApp(QMainWindow):
 
         for info, style in hospital_info:
             info_label = QLabel(info)
-            info_label.setStyleSheet(style)  # Apply custom styles
+            info_label.setStyleSheet(style)  
             self.layout.addWidget(info_label)
 
-        # Ensure the layout has the correct order
-        # self.layout.setAlignment(background_label, Qt.AlignCenter)  # Remove this line as well
+       
     def createMenu(self):
         menu_layout = QHBoxLayout()
         
-        # Doctors Button
         doctors_button = QPushButton("Doctors")
         doctors_button.clicked.connect(self.showDoctors)
         menu_layout.addWidget(doctors_button)
 
-        # Patients Button
         patients_button = QPushButton("Patients")
         patients_button.clicked.connect(self.showPatients)
         menu_layout.addWidget(patients_button)
 
-        # Appointments Button
         appointments_button = QPushButton("Appointments")
         appointments_button.clicked.connect(self.showAppointments)
         menu_layout.addWidget(appointments_button)
@@ -173,21 +156,21 @@ class HospitalManagementApp(QMainWindow):
 
 
     def showDoctors(self):
-        self.clearLayout()  # Clear the layout before showing doctors
+        self.clearLayout()  
         self.current_window = DoctorWindow(self)
-        self.layout.addWidget(self.current_window)  # Add the DoctorWindow to the layout
-        self.current_window.loadDoctors()  # Load doctors data
+        self.layout.addWidget(self.current_window)  
+        self.current_window.loadDoctors()  
 
     def showPatients(self):
-        self.clearLayout()  # Clear the layout before showing patients
+        self.clearLayout()  
         self.current_window = PatientWindow(self)
-        self.layout.addWidget(self.current_window)  # Add the PatientWindow to the layout
-        self.current_window.loadPatients()  # Load patients data
+        self.layout.addWidget(self.current_window) 
+        self.current_window.loadPatients() 
 
     def showAppointments(self):
-        self.clearLayout()  # Clear the layout before showing appointments
+        self.clearLayout() 
         self.current_window = AppointmentWindow(self)
-        self.layout.addWidget(self.current_window)  # Add the AppointmentWindow to the layout
+        self.layout.addWidget(self.current_window)  
         self.current_window.loadAppointments()
 
 
