@@ -216,10 +216,6 @@ class DoctorWindow(QWidget):
         self.add_button.clicked.connect(self.addDoctor)
         self.form_layout.addRow(self.add_button)
 
-        self.edit_button = QPushButton("Edit Doctor")
-        self.edit_button.clicked.connect(self.editDoctor)
-        self.form_layout.addRow(self.edit_button)
-
         self.delete_button = QPushButton("Delete Doctor")
         self.delete_button.clicked.connect(self.deleteDoctor)
         self.form_layout.addRow(self.delete_button)
@@ -307,10 +303,6 @@ class PatientWindow(QWidget):
         self.add_button = QPushButton("Add Patient")
         self.add_button.clicked.connect(self.addPatient)
         self.form_layout.addRow(self.add_button)
-
-        self.edit_button = QPushButton("Edit Patient")
-        self.edit_button.clicked.connect(self.editPatient)
-        self.form_layout.addRow(self.edit_button)
 
         self.delete_button = QPushButton("Delete Patient")
         self.delete_button.clicked.connect(self.deletePatient)
@@ -401,10 +393,6 @@ class AppointmentWindow(QWidget):
         self.add_button = QPushButton("Add Appointment")
         self.add_button.clicked.connect(self.addAppointment)
         self.form_layout.addRow(self.add_button)
-
-        self.edit_button = QPushButton("Edit Appointment")
-        self.edit_button.clicked.connect(self.editAppointment)
-        self.form_layout.addRow(self.edit_button)
 
         self.delete_button = QPushButton("Delete Appointment")
         self.delete_button.clicked.connect(self.deleteAppointment)
