@@ -1,6 +1,6 @@
 import sys
 import sqlite3
-from PyQt5.QtWidgets import (QApplication,QGraphicsOpacityEffect, QMainWindow, QAction, QVBoxLayout, 
+from PyQt5.QtWidgets import (QApplication, QMainWindow, QAction, QVBoxLayout, 
                              QWidget, QLabel, QLineEdit, QPushButton, 
                              QTableWidget, QTableWidgetItem, QMessageBox, 
                              QFormLayout, QHBoxLayout, QSpacerItem, QSizePolicy)
@@ -9,7 +9,7 @@ from PyQt5.QtCore import Qt
 class HospitalManagementApp(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("BU HOSPITAL")
+        self.setWindowTitle("BU HOSPITAL MANAGEMENT APPLICATION")
         self.setGeometry(100, 100, 800, 600)
 
         self.central_widget = QWidget()
@@ -23,9 +23,11 @@ class HospitalManagementApp(QMainWindow):
     def initUI(self):
         self.setStyleSheet("""
             QMainWindow {
-                background-color: #2E2E2E;
-                color: #FFFFFF;
-            }
+                background-image: url('Gradient_Image.png'); /* Set your gradient image path */
+            background-repeat: no-repeat; /* Prevents the background from repeating */
+            background-position: center; /* Centers the background image */
+            background-attachment: fixed; /* Keeps the background fixed during scrolling */
+        }
             QLabel {
                 color: #FFFFFF;
             }
@@ -65,14 +67,16 @@ class HospitalManagementApp(QMainWindow):
         
         self.createHeader()
         self.createMenu()
-        self.label = QLabel("Welcome to BU HOSPITAL")
+        self.label = QLabel("🏥🚑🩺Welcome🩺🚑🏥")
+        self.label.setAlignment(Qt.AlignCenter)
+        self.label.setStyleSheet("font-size: 100px; font-weight: bold; color: #FFD700;")  # Adjust font size and color
         self.layout.addWidget(self.label)
 
     def createHeader(self):
         header_layout = QHBoxLayout()
         
         # Hospital Name as a clickable button
-        hospital_name_button = QPushButton("BU HOSPITAL")
+        hospital_name_button = QPushButton("BU HOSPITAL MANAGEMENT")
         hospital_name_button.setStyleSheet("""
             QPushButton {
                 background: none;
@@ -167,11 +171,7 @@ class HospitalManagementApp(QMainWindow):
                                date TEXT, time TEXT)''')
         self.conn.commit()
 
-    def showLogin(self):
-        self.login_window = LoginWindow(self)
-        self.login_window.show()
 
-    
     def showDoctors(self):
         self.clearLayout()  # Clear the layout before showing doctors
         self.current_window = DoctorWindow(self)
@@ -190,36 +190,6 @@ class HospitalManagementApp(QMainWindow):
         self.layout.addWidget(self.current_window)  # Add the AppointmentWindow to the layout
         self.current_window.loadAppointments()
 
-class LoginWindow(QWidget):
-    def __init__(self, main_app):
-        super().__init__()
-        self.main_app = main_app
-        self.setWindowTitle("Login")
-        self.setGeometry(150, 150, 300, 200)
-        
-        self.layout = QVBoxLayout()
-        self.username_input = QLineEdit(self)
-        self.username_input.setPlaceholderText("Username")
-        self.password_input = QLineEdit(self)
-        self.password_input.setPlaceholderText("Password")
-        self.password_input.setEchoMode(QLineEdit.Password)
-
-        self.login_button = QPushButton("Login")
-        self.login_button.clicked.connect(self.checkLogin)
-
-        self.layout.addWidget(self.username_input)
-        self.layout.addWidget(self.password_input)
-        self.layout.addWidget(self.login_button)
-        self.setLayout(self.layout)
-
-    def checkLogin(self):
-        username = self.username_input.text()
-        password = self.password_input.text()
-        if username == "ADMIN" and password == "admin123":
-            QMessageBox.information(self, "Login", "Login Successful!")
-            self.close()
-        else:
-            QMessageBox.warning(self, "Login", "Invalid Credentials!")
 
 class DoctorWindow(QWidget):
     def __init__(self, main_app):
@@ -246,6 +216,14 @@ class DoctorWindow(QWidget):
         self.add_button.clicked.connect(self.addDoctor)
         self.form_layout.addRow(self.add_button)
 
+        self.edit_button = QPushButton("Edit Doctor")
+        self.edit_button.clicked.connect(self.editDoctor)
+        self.form_layout.addRow(self.edit_button)
+
+        self.delete_button = QPushButton("Delete Doctor")
+        self.delete_button.clicked.connect(self.deleteDoctor)
+        self.form_layout.addRow(self.delete_button)
+
         self.layout.addLayout(self.form_layout)
         self.setLayout(self.layout)
         self.loadDoctors()
@@ -267,11 +245,43 @@ class DoctorWindow(QWidget):
                                           (name, specialty, contact))
             self.main_app.conn.commit()
             self.loadDoctors()
-            self.name_input.clear()
-            self.specialty_input.clear()
-            self.contact_input.clear()
+            self.clearInputs()
         else:
             QMessageBox.warning(self, "Input Error", "Please fill all fields.")
+
+    def editDoctor(self):
+        selected_row = self.table.currentRow()
+        if selected_row >= 0:
+            doctor_id = self.table.item(selected_row, 0).text()
+            name = self.name_input.text()
+            specialty = self.specialty_input.text()
+            contact = self.contact_input.text()
+            if name and specialty and contact:
+                self.main_app.cursor.execute("UPDATE doctors SET name=?, specialty=?, contact=? WHERE id=?", 
+                                              (name, specialty, contact, doctor_id))
+                self.main_app.conn.commit()
+                self.loadDoctors()
+                self.clearInputs()
+            else:
+                QMessageBox.warning(self, "Input Error", "Please fill all fields.")
+        else:
+            QMessageBox.warning(self, "Selection Error", "Please select a doctor to edit.")
+
+    def deleteDoctor(self):
+        selected_row = self.table.currentRow()
+        if selected_row >= 0:
+            doctor_id = self.table.item(selected_row, 0).text()
+            self.main_app.cursor.execute("DELETE FROM doctors WHERE id=?", (doctor_id,))
+            self.main_app.conn.commit()
+            self.loadDoctors()
+        else:
+            QMessageBox.warning(self, "Selection Error", "Please select a doctor to delete.")
+
+    def clearInputs(self):
+        self.name_input.clear()
+        self.specialty_input.clear()
+        self.contact_input.clear()
+
 
 class PatientWindow(QWidget):
     def __init__(self, main_app):
@@ -286,7 +296,7 @@ class PatientWindow(QWidget):
         self.table.setHorizontalHeaderLabels(["ID", "Name", "Concern", "Contact"])
         self.layout.addWidget(self.table)
 
-        self.form_layout = QFormLayout()
+        self .form_layout = QFormLayout()
         self.name_input = QLineEdit(self)
         self.concern_input = QLineEdit(self)
         self.contact_input = QLineEdit(self)
@@ -297,6 +307,14 @@ class PatientWindow(QWidget):
         self.add_button = QPushButton("Add Patient")
         self.add_button.clicked.connect(self.addPatient)
         self.form_layout.addRow(self.add_button)
+
+        self.edit_button = QPushButton("Edit Patient")
+        self.edit_button.clicked.connect(self.editPatient)
+        self.form_layout.addRow(self.edit_button)
+
+        self.delete_button = QPushButton("Delete Patient")
+        self.delete_button.clicked.connect(self.deletePatient)
+        self.form_layout.addRow(self.delete_button)
 
         self.layout.addLayout(self.form_layout)
         self.setLayout(self.layout)
@@ -319,11 +337,43 @@ class PatientWindow(QWidget):
                                           (name, concern, contact))
             self.main_app.conn.commit()
             self.loadPatients()
-            self.name_input.clear()
-            self.concern_input.clear()
-            self.contact_input.clear()
+            self.clearInputs()
         else:
             QMessageBox.warning(self, "Input Error", "Please fill all fields.")
+
+    def editPatient(self):
+        selected_row = self.table.currentRow()
+        if selected_row >= 0:
+            patient_id = self.table.item(selected_row, 0).text()
+            name = self.name_input.text()
+            concern = self.concern_input.text()
+            contact = self.contact_input.text()
+            if name and concern and contact:
+                self.main_app.cursor.execute("UPDATE patients SET name=?, concern=?, contact=? WHERE id=?", 
+                                              (name, concern, contact, patient_id))
+                self.main_app.conn.commit()
+                self.loadPatients()
+                self.clearInputs()
+            else:
+                QMessageBox.warning(self, "Input Error", "Please fill all fields.")
+        else:
+            QMessageBox.warning(self, "Selection Error", "Please select a patient to edit.")
+
+    def deletePatient(self):
+        selected_row = self.table.currentRow()
+        if selected_row >= 0:
+            patient_id = self.table.item(selected_row, 0).text()
+            self.main_app.cursor.execute("DELETE FROM patients WHERE id=?", (patient_id,))
+            self.main_app.conn.commit()
+            self.loadPatients()
+        else:
+            QMessageBox.warning(self, "Selection Error", "Please select a patient to delete.")
+
+    def clearInputs(self):
+        self.name_input.clear()
+        self.concern_input.clear()
+        self.contact_input.clear()
+
 
 class AppointmentWindow(QWidget):
     def __init__(self, main_app):
@@ -343,7 +393,7 @@ class AppointmentWindow(QWidget):
         self.patient_id_input = QLineEdit(self)
         self.date_input = QLineEdit(self)
         self.time_input = QLineEdit(self)
-        self.form_layout.addRow("Doctor ID:", self .doctor_id_input)
+        self.form_layout.addRow("Doctor ID:", self.doctor_id_input)
         self.form_layout.addRow("Patient ID:", self.patient_id_input)
         self.form_layout.addRow("Date:", self.date_input)
         self.form_layout.addRow("Time:", self.time_input)
@@ -351,6 +401,14 @@ class AppointmentWindow(QWidget):
         self.add_button = QPushButton("Add Appointment")
         self.add_button.clicked.connect(self.addAppointment)
         self.form_layout.addRow(self.add_button)
+
+        self.edit_button = QPushButton("Edit Appointment")
+        self.edit_button.clicked.connect(self.editAppointment)
+        self.form_layout.addRow(self.edit_button)
+
+        self.delete_button = QPushButton("Delete Appointment")
+        self.delete_button.clicked.connect(self.deleteAppointment)
+        self.form_layout.addRow(self.delete_button)
 
         self.layout.addLayout(self.form_layout)
         self.setLayout(self.layout)
@@ -374,12 +432,44 @@ class AppointmentWindow(QWidget):
                                           (doctor_id, patient_id, date, time))
             self.main_app.conn.commit()
             self.loadAppointments()
-            self.doctor_id_input.clear()
-            self.patient_id_input.clear()
-            self.date_input.clear()
-            self.time_input.clear()
+            self.clearInputs()
         else:
             QMessageBox.warning(self, "Input Error", "Please fill all fields.")
+
+    def editAppointment(self):
+        selected_row = self.table.currentRow()
+        if selected_row >= 0:
+            appointment_id = self.table.item(selected_row, 0).text()
+            doctor_id = self.doctor_id_input.text()
+            patient_id = self.patient_id_input.text()
+            date = self.date_input.text()
+            time = self.time_input.text()
+            if doctor_id and patient_id and date and time:
+                self.main_app.cursor.execute("UPDATE appointments SET doctor_id=?, patient_id=?, date=?, time=? WHERE id=?", 
+                                              (doctor_id, patient_id, date, time, appointment_id))
+                self.main_app.conn.commit()
+                self.loadAppointments()
+                self.clearInputs()
+            else:
+                QMessageBox.warning(self, "Input Error", "Please fill all fields.")
+        else:
+            QMessageBox.warning(self, "Selection Error", "Please select an appointment to edit.")
+
+    def deleteAppointment(self):
+        selected_row = self.table.currentRow()
+        if selected_row >= 0:
+            appointment_id = self.table.item(selected_row, 0).text()
+            self.main_app.cursor.execute("DELETE FROM appointments WHERE id=?", (appointment_id,))
+            self.main_app.conn.commit()
+            self.loadAppointments()
+        else:
+            QMessageBox.warning(self, "Selection Error", "Please select an appointment to delete.")
+
+    def clearInputs(self):
+        self.doctor_id_input.clear()
+        self.patient_id_input.clear()
+        self.date_input.clear()
+        self.time_input.clear()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
