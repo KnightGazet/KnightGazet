@@ -112,7 +112,7 @@ class HospitalManagementApp(QMainWindow):
         hospital_info = [
             ("Our Mission: To provide compassionate and high-quality healthcare.", "font-size: 18px; color: #ADD8E6;"),
             ("Services Offered: Emergency care, outpatient services, surgery, and more.", "font-size: 18px; color: #90EE90;"),
-            ("Established: 1990, serving the community for over 30 years.", "font-size: 18px; color: #FFB6C1;"),
+            ("Established: 1990, serving the community for over 34 years.", "font-size: 18px; color: #FFB6C1;"),
             ("Contact Us: Phone: (123) 456-7890 | Email: info@buhospital.com", "font-size: 18px; color: #FFFFFF;"),
             ("Visit our website for more information: www.buhospital.com", "font-size: 18px; color: #FFA07A;"),
         ]
