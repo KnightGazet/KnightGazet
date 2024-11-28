@@ -1,10 +1,9 @@
 import sys
 import sqlite3
-from PyQt5.QtWidgets import (QApplication, QMainWindow, QAction, QVBoxLayout, 
+from PyQt5.QtWidgets import (QApplication, QMainWindow, QVBoxLayout, 
                              QWidget, QLabel, QLineEdit, QPushButton, 
                              QTableWidget, QTableWidgetItem, QMessageBox, 
                              QFormLayout, QHBoxLayout, QSpacerItem, QSizePolicy)
-from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
 class HospitalManagementApp(QMainWindow):
     def __init__(self):
